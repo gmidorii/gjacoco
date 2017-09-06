@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/csv"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -14,6 +16,10 @@ type Target struct {
 	Class   string
 	LineNum int
 	CovNum  int
+}
+
+func (t Target) String() string {
+	return fmt.Sprintf("%s.%s", t.Package, t.Class)
 }
 
 func main() {
@@ -26,15 +32,19 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println(calcAllCov(targets))
 }
 
-func csvParse(jacocoPath string, blackList BlackList) (map[string][]string, error) {
+func csvParse(jacocoPath string, blackList BlackList) (map[string]Target, error) {
 	jacoco, err := os.Open(jacocoPath)
 	if err != nil {
 		return nil, err
 	}
 	r := csv.NewReader(jacoco)
-	var targets map[string][]string
+	targets := map[string]Target{}
+	// skip first line
+	r.Read()
 	for {
 		record, err := r.Read()
 		if err == io.EOF {
@@ -47,12 +57,13 @@ func csvParse(jacocoPath string, blackList BlackList) (map[string][]string, erro
 			continue
 		}
 
-		target := make([]string, 4)
-		// package, class, c0miss, c0cov
-		target = append(target, record[1], record[2], record[3], record[4])
+		target, err := convertTarget(record)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-		if _, ok := targets[record[1]+record[2]]; ok == true {
-			targets[record[1]+record[2]] = target
+		if _, ok := targets[target.String()]; !ok {
+			targets[target.String()] = target
 		}
 	}
 	return targets, nil
@@ -60,20 +71,44 @@ func csvParse(jacocoPath string, blackList BlackList) (map[string][]string, erro
 
 func check(blackList BlackList, record []string) bool {
 	if blackList.hasPackage(record[1]) {
-		false
+		return false
 	}
 	if strings.Contains(record[2], ".") {
-		false
+		return false
 	}
 	if blackList.hasClass(record[2]) {
-		false
+		return false
 	}
 	return true
 }
 
-func calcAll(targets map[string][]string) int {
-	var lineNum int
-	var covNam int
-	for _, v := range targets {
+func convertTarget(record []string) (Target, error) {
+	missNum, err := strconv.Atoi(record[3])
+	if err != nil {
+		return Target{}, err
 	}
+
+	covNum, err := strconv.Atoi(record[4])
+	if err != nil {
+		return Target{}, err
+	}
+
+	return Target{
+		Package: record[1],
+		Class:   record[2],
+		LineNum: missNum + covNum,
+		CovNum:  covNum,
+	}, nil
+}
+
+func calcAllCov(targets map[string]Target) string {
+	var sumLineNum int
+	var sumCovNum int
+	for _, v := range targets {
+		sumLineNum += v.LineNum
+		sumCovNum += v.CovNum
+	}
+
+	cov := float64(sumCovNum) / float64(sumLineNum) * 100
+	return fmt.Sprint(cov)[0:5]
 }

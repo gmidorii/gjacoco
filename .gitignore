@@ -16,3 +16,5 @@
 *.un~
 gin-bin
 jacoco.csv
+black-list.toml
+gjacoco

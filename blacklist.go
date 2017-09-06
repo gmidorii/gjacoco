@@ -1,6 +1,10 @@
 package main
 
-import "golang/src/github.com/BurntSushi/toml"
+import (
+	"strings"
+
+	"github.com/BurntSushi/toml"
+)
 
 // BlackList is black list setting is not measuring coverage
 type BlackList struct {
@@ -10,7 +14,7 @@ type BlackList struct {
 
 func (b *BlackList) hasPackage(pack string) bool {
 	for _, v := range b.Packages {
-		if pack == v {
+		if strings.Contains(pack, v) {
 			return true
 		}
 	}
