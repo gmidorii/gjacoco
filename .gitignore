@@ -18,3 +18,4 @@ gin-bin
 jacoco.csv
 black-list.toml
 gjacoco
+template/output.html

@@ -18,6 +18,9 @@ func main() {
 	}
 
 	fmt.Println(calcAllCov(targets))
+	if err := outputTarget("./template/output.html", targets); err != nil {
+		log.Println(err)
+	}
 }
 
 func calcAllCov(targets map[string]Target) string {
