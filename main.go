@@ -18,7 +18,7 @@ func main() {
 	}
 
 	fmt.Println(calcAllCov(targets))
-	if err := outputTarget("./template/output.html", targets); err != nil {
+	if err := outputTarget("./output.html", targets); err != nil {
 		log.Println(err)
 	}
 }
