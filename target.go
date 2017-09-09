@@ -9,10 +9,11 @@ import (
 )
 
 type Target struct {
-	Package string
-	Class   string
-	LineNum int
-	CovNum  int
+	Package  string
+	Class    string
+	Coverage float64
+	LineNum  int
+	CovNum   int
 }
 
 type Output struct {
@@ -34,12 +35,14 @@ func convertTarget(record []string) (Target, error) {
 	if err != nil {
 		return Target{}, err
 	}
+	cov := float64(covNum) / float64(covNum+missNum) * 100
 
 	return Target{
-		Package: record[1],
-		Class:   record[2],
-		LineNum: missNum + covNum,
-		CovNum:  covNum,
+		Package:  record[1],
+		Class:    record[2],
+		Coverage: cov,
+		LineNum:  missNum + covNum,
+		CovNum:   covNum,
 	}, nil
 }
 

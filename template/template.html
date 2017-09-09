@@ -79,18 +79,16 @@ START MODULE AREA 2: Text Accordian
     <div data-layout="de6">
       <h2 class="MOD_TEXTACCORDION_Title" data-theme="_bb2">{{ .CovAll }}</h2>
       <p>
-	  Coverage All
+	  Coverage All {{ len .Targets }} Classes
       </p>
     </div>
     <div data-layout="de10">
       <div class="AP_accordion" role="tablist">
         {{range .Targets }}
-        <p class="AP_accordion_tab" role="tab" data-theme="_bgp" tabindex="0">{{ .Package }}.{{ .Class }}</p>
+		<p class="AP_accordion_tab" role="tab" data-theme="_bgp" tabindex="0">{{ .Class }} {{ .Coverage }}</p>
         <div class="AP_accordion_panel" role="tabpanel">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit
-            {{ .LineNum }}
-          </p>
+			<p>{{ .Package }}</p>
+			<p>{{ .CovNum }}/{{ .LineNum }} (coveage num/ all line num)</p>
         </div>
         {{ end }}
       </div>
