@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Aperitif - Custom Template</title>
+	<title>GJacoco</title>
 
 	<link rel="stylesheet" href="assets/css/style.min.css">
 	<link rel="stylesheet" href="assets/css/modules.css">
@@ -77,10 +77,21 @@ START MODULE AREA 2: Text Accordian
 <section>
   <div data-layout="_r">
     <div data-layout="de6">
-      <h2 class="MOD_TEXTACCORDION_Title" data-theme="_bb2">{{ .CovAll }}</h2>
-      <p>
-	  Coverage All {{ len .Targets }} Classes
-      </p>
+      <h2 class="MOD_TEXTACCORDION_Title" data-theme="_bb2">{{ .Statistic.CovAll }}</h2>
+			<p>Coverage All {{ len .Targets }} Classes</p>
+			<p>Coverage Ratio</p>
+			<table>
+					<tr>
+						<td>Percentage(%)</td>
+						<td>Num</td>
+					</tr>
+					{{ range $key, $value := .Statistic.CovRatio }}
+					<tr>
+						<td>{{ $key }}</td>
+						<td>{{ $value }}</td>
+					</tr>
+					{{ end }}
+			</table>
     </div>
     <div data-layout="de10">
       <div class="AP_accordion" role="tablist">
@@ -90,7 +101,7 @@ START MODULE AREA 2: Text Accordian
 			<p>{{ .Package }}</p>
 			<p>{{ .CovNum }}/{{ .LineNum }} (coveage num/ all line num)</p>
         </div>
-        {{ end }}
+        {{end }}
       </div>
     </div>
   </div>

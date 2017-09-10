@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -17,8 +18,13 @@ type Target struct {
 }
 
 type Output struct {
-	CovAll  string
-	Targets []Target
+	Statistic Statistic
+	Targets   []Target
+}
+
+type Statistic struct {
+	CovAll   string
+	CovRatio map[int]int
 }
 
 func (t Target) String() string {
@@ -74,10 +80,56 @@ func outputTarget(fpath string, targets map[string]Target) error {
 		targetSlice = append(targetSlice, v)
 	}
 
+	sort.Slice(targetSlice, func(i, j int) bool {
+		return targetSlice[i].Coverage < targetSlice[j].Coverage
+	})
+
 	output := Output{
-		CovAll:  covAll,
+		Statistic: Statistic{
+			CovAll:   covAll,
+			CovRatio: makeCovRatio(targetSlice),
+		},
 		Targets: targetSlice,
 	}
 
 	return t.Execute(fout, &output)
+}
+
+func makeCovRatio(targets []Target) map[int]int {
+	var covRationMap = make(map[int]int, 5)
+	targetLen := len(targets)
+	count := 0
+
+	// 0
+	index := sort.Search(targetLen, func(i int) bool {
+		return targets[i].Coverage > 0
+	})
+	covRationMap[0] = index
+	count += index
+
+	// 0 < cov < 30
+	index = sort.Search(targetLen, func(i int) bool {
+		return targets[i].Coverage >= 30
+	})
+	covRationMap[30] = index - count
+	count += covRationMap[30]
+
+	// 30 <= cov < 60
+	index = sort.Search(targetLen, func(i int) bool {
+		return targets[i].Coverage > 60
+	})
+	covRationMap[60] = index - count
+	count += covRationMap[60]
+
+	// 60 <= cov < 90
+	index = sort.Search(targetLen, func(i int) bool {
+		return targets[i].Coverage > 90
+	})
+	covRationMap[90] = index - count
+	count += covRationMap[90]
+
+	// 90 <= cov <= 100
+	covRationMap[100] = targetLen - count
+
+	return covRationMap
 }

@@ -1655,3 +1655,24 @@ body .MOD_IMPACTSTRIP4_Txt p {
     font-size: 1.5em;
   }
 }
+
+table{
+  border-collapse: separate;
+  text-align: left;
+  line-height: 1.5;
+  border: 1px solid #ccc;
+}
+tr:nth-child(even){
+  background:#F2F2F2;
+}
+th{
+  background:#222222;
+  color:white;
+}
+th:nth-child(odd){
+  background:#444444;
+}
+th,td{
+  padding:5px;
+  font-size:small;
+}
