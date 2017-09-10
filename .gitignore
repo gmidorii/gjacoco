@@ -19,3 +19,6 @@ jacoco.csv
 black-list.toml
 gjacoco
 output/output.html
+config.toml
+debug
+
