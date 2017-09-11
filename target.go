@@ -97,39 +97,38 @@ func outputTarget(fpath string, targets map[string]Target) error {
 
 func makeCovRatio(targets []Target) map[int]int {
 	var covRationMap = make(map[int]int, 5)
-	targetLen := len(targets)
-	count := 0
-
 	// 0
-	index := sort.Search(targetLen, func(i int) bool {
-		return targets[i].Coverage > 0
-	})
-	covRationMap[0] = index
-	count += index
+	var c int
+	for _, v := range targets {
+		if v.Coverage == 0 {
+			c++
+			continue
+		}
+		break
+	}
+	covRationMap[0] = c
 
-	// 0 < cov < 30
-	index = sort.Search(targetLen, func(i int) bool {
-		return targets[i].Coverage >= 30
-	})
-	covRationMap[30] = index - count
-	count += covRationMap[30]
-
-	// 30 <= cov < 60
-	index = sort.Search(targetLen, func(i int) bool {
-		return targets[i].Coverage > 60
-	})
-	covRationMap[60] = index - count
-	count += covRationMap[60]
-
-	// 60 <= cov < 90
-	index = sort.Search(targetLen, func(i int) bool {
-		return targets[i].Coverage > 90
-	})
-	covRationMap[90] = index - count
-	count += covRationMap[90]
-
-	// 90 <= cov <= 100
-	covRationMap[100] = targetLen - count
-
+	c = countCov(targets, 0, 30)
+	covRationMap[30] = c - covRationMap[0]
+	covRationMap[60] = countCov(targets, 30, 60)
+	covRationMap[90] = countCov(targets, 60, 90)
+	c = 0
+	for _, v := range targets {
+		if v.Coverage == 100 {
+			c++
+			continue
+		}
+		break
+	}
+	covRationMap[100] = countCov(targets, 90, 100) + c
 	return covRationMap
+}
+
+func countCov(targets []Target, min, max float64) (count int) {
+	for _, v := range targets {
+		if v.Coverage >= min && v.Coverage < max {
+			count++
+		}
+	}
+	return
 }
