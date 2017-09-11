@@ -116,9 +116,7 @@ func makeCovRatio(targets []Target) map[int]int {
 	for _, v := range targets {
 		if v.Coverage == 100 {
 			c++
-			continue
 		}
-		break
 	}
 	covRationMap[100] = countCov(targets, 90, 100) + c
 	return covRationMap
