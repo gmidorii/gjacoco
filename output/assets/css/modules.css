@@ -709,9 +709,6 @@ textarea {
     text-align: left;
   }
 
-  .MOD_HEADER1 > [data-layout="_r"] {
-    margin-top: 2rem;
-  }
 
   .MOD_HEADER1 .smIcon {
     margin: 0 0 0 0.5rem;
